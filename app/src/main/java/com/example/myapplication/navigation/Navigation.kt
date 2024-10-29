@@ -5,16 +5,26 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapplication.ui.screens.PlayerListScreen
 import com.example.myapplication.ui.screens.PlayerDetailScreen
+import com.example.myapplication.ui.screens.RecentMatchesScreen
+import com.example.myapplication.viewmodel.MainViewModel
 
 @Composable
-fun Navigation(navController: NavHostController, paddingValues: PaddingValues) {
+fun Navigation(
+    navController: NavHostController,
+    paddingValues: PaddingValues,
+    viewModel: MainViewModel
+) {
     NavHost(navController = navController, startDestination = "playerList") {
-        composable("playerList") { PlayerListScreen(navController, paddingValues) }
-        composable("playerDetail/{accountId}") { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getString("accountId") ?: ""
-            PlayerDetailScreen(accountId = accountId)
+        composable("playerList") {
+            // Здесь можно добавить экран со списком игроков
+            // PlayerListScreen(navController = navController, viewModel = viewModel)
+        }
+        composable("playerDetail/{playerId}") { backStackEntry ->
+            val playerId = backStackEntry.arguments?.getString("playerId")?.toLongOrNull()
+            if (playerId != null) {
+                RecentMatchesScreen(viewModel = viewModel, playerId = playerId) // Передаём playerId в экран
+            }
         }
     }
 }

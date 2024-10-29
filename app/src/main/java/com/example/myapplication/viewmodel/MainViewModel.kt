@@ -2,20 +2,30 @@ package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.model.Match
 import com.example.myapplication.model.Player
-import com.example.myapplication.network.DotaApi
+import com.example.myapplication.usecase.GetPlayersUseCase
+import com.example.myapplication.usecase.GetRecentMatchesUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val api: DotaApi) : ViewModel() {
-    private val _players = mutableListOf<Player>()
+class MainViewModel(
+    private val getPlayersUseCase: GetPlayersUseCase,
+    private val getRecentMatchesUseCase: GetRecentMatchesUseCase
+) : ViewModel() {
 
-    fun fetchPlayers() {
+    private val _recentMatchesState = MutableStateFlow<UiState<List<Match>>>(UiState.Loading)
+    val recentMatchesState: StateFlow<UiState<List<Match>>> = _recentMatchesState
+
+    fun loadRecentMatches(playerId: Long) {
         viewModelScope.launch {
+            _recentMatchesState.value = UiState.Loading
             try {
-                val players = api.getPlayers()
-                _players.addAll(players)
+                val matches = getRecentMatchesUseCase(playerId)
+                _recentMatchesState.value = UiState.Success(matches)
             } catch (e: Exception) {
-                // Обработка ошибок
+                _recentMatchesState.value = UiState.Error(e.message ?: "Unknown error")
             }
         }
     }
