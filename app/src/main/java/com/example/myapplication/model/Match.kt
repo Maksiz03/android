@@ -1,4 +1,3 @@
-// Match.kt
 package com.example.myapplication.model
 
 data class Match(
@@ -10,6 +9,7 @@ data class Match(
     val duration: Int,
     val game_mode: Int,
     val lobby_type: Int,
+    val version: String?,
     val kills: Int,
     val deaths: Int,
     val assists: Int,
@@ -19,5 +19,12 @@ data class Match(
     val hero_damage: Int,
     val tower_damage: Int,
     val hero_healing: Int,
-    val last_hits: Int
+    val last_hits: Int,
+    val lane: String?,
+    val lane_role: String?,
+    val is_roaming: Boolean?,
+    val cluster: Int,
+    val leaver_status: Int,
+    val party_size: Int?,
+    val hero_variant: Int
 )

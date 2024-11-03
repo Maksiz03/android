@@ -132,8 +132,8 @@ dependencies {
     implementation ("androidx.compose.material:material:1.4.2")
     implementation ("androidx.compose.material:material:1.4.7" )// Material Design для Compose
     implementation ("io.insert-koin:koin-android:3.2.0")
-
-
+    implementation ("io.insert-koin:koin-androidx-compose:3.2.0")
+    implementation ("io.insert-koin:koin-core:3.2.0")
 
 
 }
