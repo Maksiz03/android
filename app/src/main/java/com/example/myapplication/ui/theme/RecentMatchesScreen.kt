@@ -6,10 +6,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
-import com.example.myapplication.viewmodel.MainViewModel
-import com.example.myapplication.viewmodel.UiState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.model.Match
+import com.example.myapplication.viewmodel.MainViewModel
+
 
 @Composable
 fun RecentMatchesScreen(
@@ -22,22 +24,18 @@ fun RecentMatchesScreen(
     }
 
     // Сбор состояния для недавних матчей
-    val recentMatchesState = viewModel.recentMatchesState.collectAsState()
+    val recentMatches = viewModel.recentMatches.collectAsState(initial = null)
 
     Column(modifier = Modifier.padding(16.dp)) {
-        when (val state = recentMatchesState.value) {
-            is UiState.Loading -> {
-                Text("Loading...")
+        when (val matches = recentMatches.value) {
+            null -> {
+                Text("Loading or Error loading recent matches.")
             }
-            is UiState.Success -> {
-                val matches = state.data // Получаем список матчей
+            else -> {
                 matches.forEach { match ->
                     // Отображаем детали матчей
                     Text("Match ID: ${match.match_id}, Kills: ${match.kills}, Deaths: ${match.deaths}, Assists: ${match.assists}")
                 }
-            }
-            is UiState.Error -> {
-                Text("Error: ${state.message}")
             }
         }
     }

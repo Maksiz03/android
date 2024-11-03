@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.components
 
-
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
@@ -11,9 +10,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry.value?.destination?.route
+
     BottomNavigation {
         val items = listOf(
             NavigationItem.PlayerList,
@@ -24,11 +27,15 @@ fun BottomNavigationBar(navController: NavController) {
             BottomNavigationItem(
                 icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
-                selected = false, // You might want to manage selection state
+                selected = currentRoute == item.route,
                 onClick = {
-                    navController.navigate(item.route) {
-                        // Prevent building up the back stack
-                        popUpTo("playerList") { inclusive = true }
+                    val route = if (item is NavigationItem.PlayerDetail) {
+                        "playerDetail/1" // Здесь должен быть ID игрока
+                    } else {
+                        item.route
+                    }
+                    navController.navigate(route) {
+                        popUpTo(NavigationItem.PlayerList.route) { inclusive = false }
                     }
                 }
             )
@@ -38,5 +45,5 @@ fun BottomNavigationBar(navController: NavController) {
 
 sealed class NavigationItem(val title: String, val icon: ImageVector, val route: String) {
     object PlayerList : NavigationItem("Players", Icons.Filled.List, "playerList")
-    object PlayerDetail : NavigationItem("Details", Icons.Filled.Info, "playerDetail/{accountId}")
+    object PlayerDetail : NavigationItem("Details", Icons.Filled.Info, "playerDetail/{playerId}")
 }

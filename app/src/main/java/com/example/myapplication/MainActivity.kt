@@ -3,12 +3,15 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.navigation.Navigation
+import com.example.myapplication.ui.components.BottomNavigationBar
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -22,9 +25,20 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    Navigation(navController = navController, paddingValues = PaddingValues(0.dp), viewModel = viewModel)
+                    // Вызываем загрузку матчей для конкретного playerId
+                    viewModel.loadRecentMatches(301109979) // Замените 1L на актуальный playerId
+                    Scaffold(
+                        bottomBar = { BottomNavigationBar(navController = navController) }
+                    ) { innerPadding ->
+                        Navigation(
+                            navController = navController,
+                            paddingValues = innerPadding,
+                            viewModel = viewModel
+                        )
+                    }
                 }
             }
         }
     }
+
 }

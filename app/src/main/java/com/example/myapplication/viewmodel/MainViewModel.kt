@@ -3,7 +3,6 @@ package com.example.myapplication.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.model.Match
-import com.example.myapplication.model.Player
 import com.example.myapplication.usecase.GetPlayersUseCase
 import com.example.myapplication.usecase.GetRecentMatchesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,17 +14,18 @@ class MainViewModel(
     private val getRecentMatchesUseCase: GetRecentMatchesUseCase
 ) : ViewModel() {
 
-    private val _recentMatchesState = MutableStateFlow<UiState<List<Match>>>(UiState.Loading)
-    val recentMatchesState: StateFlow<UiState<List<Match>>> = _recentMatchesState
+    // StateFlow для хранения недавних матчей
+    private val _recentMatches = MutableStateFlow<List<Match>>(emptyList())
+    val recentMatches: StateFlow<List<Match>> get() = _recentMatches
 
     fun loadRecentMatches(playerId: Long) {
         viewModelScope.launch {
-            _recentMatchesState.value = UiState.Loading
             try {
                 val matches = getRecentMatchesUseCase(playerId)
-                _recentMatchesState.value = UiState.Success(matches)
+                _recentMatches.value = matches
             } catch (e: Exception) {
-                _recentMatchesState.value = UiState.Error(e.message ?: "Unknown error")
+                _recentMatches.value = emptyList() // Устанавливаем пустой список в случае ошибки
+                println("Error loading recent matches: ${e.message}")
             }
         }
     }
