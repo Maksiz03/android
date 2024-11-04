@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.navigation.Navigation
 import com.example.myapplication.network.DotaApiImpl
 import com.example.myapplication.repository.MatchRepositoryImpl
@@ -32,5 +34,11 @@ fun AppContent() {
 
     val viewModel = MatchViewModel(getRecentMatchesUseCase)
 
-    Navigation(navController = navController, viewModel = viewModel)
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { innerPadding ->
+        Navigation(navController = navController, viewModel = viewModel, paddingValues = innerPadding)
+    }
 }

@@ -1,24 +1,36 @@
 package com.example.myapplication.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.ui.screens.MatchDetailScreen
 import com.example.myapplication.ui.screens.MatchListScreen
 import com.example.myapplication.viewmodel.MatchViewModel
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 
 @Composable
-fun Navigation(navController: NavHostController, viewModel: MatchViewModel) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Adding NavHost for navigation between screens
+fun Navigation(
+    navController: NavHostController,
+    viewModel: MatchViewModel,
+    paddingValues: PaddingValues
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
         NavHost(navController = navController, startDestination = "matchList") {
             composable("matchList") {
-                MatchListScreen(navController = navController, viewModel = viewModel, playerId = 301109979)
+                MatchListScreen(
+                    navController = navController,
+                    viewModel = viewModel,
+                    playerId = 301109979
+                )
             }
             composable("matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}") { backStackEntry ->
                 val matchId = backStackEntry.arguments?.getString("matchId")?.toLong() ?: 0
@@ -27,10 +39,15 @@ fun Navigation(navController: NavHostController, viewModel: MatchViewModel) {
                 val deaths = backStackEntry.arguments?.getString("deaths")?.toInt() ?: 0
                 val assists = backStackEntry.arguments?.getString("assists")?.toInt() ?: 0
 
-                MatchDetailScreen(matchId = matchId, playerSlot = playerSlot, kills = kills, deaths = deaths, assists = assists)
+                MatchDetailScreen(
+                    matchId = matchId,
+                    playerSlot = playerSlot,
+                    kills = kills,
+                    deaths = deaths,
+                    assists = assists,
+                    navController = navController // Pass the NavController to the screen
+                )
             }
         }
-        // Placing BottomNavigationBar at the bottom of the screen
-        BottomNavigationBar(navController = navController)
     }
 }
