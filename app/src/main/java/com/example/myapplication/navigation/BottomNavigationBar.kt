@@ -8,13 +8,16 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+// Define the navigation items including the new Settings item
 sealed class NavigationItem(val title: String, val icon: ImageVector, val route: String) {
     object MatchList : NavigationItem("Matches", Icons.Filled.List, "matchList")
-    object MatchDetail : NavigationItem("Match Details", Icons.Filled.Info, "matchDetail/{matchId}")
+    object MatchDetail : NavigationItem("Match Details", Icons.Filled.Info, "matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}")
+    object Settings : NavigationItem("Settings", Icons.Filled.Settings, "settings")
 }
 
 @Composable
@@ -25,14 +28,15 @@ fun BottomNavigationBar(navController: NavController) {
     BottomNavigation {
         val items = listOf(
             NavigationItem.MatchList,
-            NavigationItem.MatchDetail
+            NavigationItem.MatchDetail,
+            NavigationItem.Settings  // Add Settings to the navigation items
         )
 
         items.forEach { item ->
             BottomNavigationItem(
                 icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
-                selected = currentRoute == item.route,
+                selected = currentRoute?.startsWith(item.route.substringBefore("/{")) == true,
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
