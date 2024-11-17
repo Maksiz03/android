@@ -8,16 +8,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.navigation.BottomNavigationBar
-import com.example.myapplication.navigation.Navigation
-import com.example.myapplication.network.DotaApiImpl
-import com.example.myapplication.repository.MatchRepositoryImpl
-import com.example.myapplication.usecase.GetRecentMatchesUseCase
-import com.example.myapplication.usecase.GetMatchesByIdsUseCase
-import com.example.myapplication.viewmodel.MatchViewModel
 import com.example.myapplication.datastore.FavoritesDataStore
 import com.example.myapplication.datastore.PreferencesDataStore
+import com.example.myapplication.navigation.BottomNavigationBar
+import com.example.myapplication.navigation.Navigation
+import com.example.myapplication.viewmodel.MatchViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
 
+// Аннотируем активность для использования Hilt
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,33 +27,33 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Функция для контента с Bottom Navigation и навигацией
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppContent() {
+fun AppContent(
+    viewModel: MatchViewModel = hiltViewModel() // Use Hilt to provide ViewModel
+) {
     val navController = rememberNavController()
 
-    // Initialize dependencies
-    val dotaApi = DotaApiImpl()
-    val matchRepository = MatchRepositoryImpl(dotaApi)
-    val getRecentMatchesUseCase = GetRecentMatchesUseCase(matchRepository)
-    val getMatchesByIdsUseCase = GetMatchesByIdsUseCase(matchRepository)
+    // Get the current context
+    val context = LocalContext.current
 
-    val viewModel = MatchViewModel(getRecentMatchesUseCase, getMatchesByIdsUseCase)
+    // Initialize DataStore objects with context
+    val favoritesDataStore = FavoritesDataStore(context)
+    val preferencesDataStore = PreferencesDataStore(context)
 
-    // Initialize FavoritesDataStore and PreferencesDataStore
-    val favoritesDataStore = FavoritesDataStore()
-    val preferencesDataStore = PreferencesDataStore(context = LocalContext.current)
-
+    // Scaffold for main UI with BottomBar
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
     ) { innerPadding ->
+        // Navigation with passing necessary data
         Navigation(
             navController = navController,
             viewModel = viewModel,
             favoritesDataStore = favoritesDataStore,
-            preferencesDataStore = preferencesDataStore, // Ensure this is passed
+            preferencesDataStore = preferencesDataStore,
             paddingValues = innerPadding
         )
     }

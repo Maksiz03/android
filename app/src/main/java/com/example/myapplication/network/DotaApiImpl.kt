@@ -21,7 +21,7 @@ class DotaApiImpl : DotaApi {
         return api.getRecentMatches(playerId)
     }
 
-    override suspend fun getMatchesByIds(matchIds: Set<String>): List<Match> {
+    override suspend fun getMatchesByIds(matchIds: List<Long>): List<Match> {
         // Assuming the API supports querying multiple match IDs
         return api.getMatchesByIds(matchIds)
     }

@@ -1,23 +1,25 @@
 package com.example.myapplication.navigation
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 
-// Define the navigation items including the new Settings item
+// Define the navigation items including the new Favorites item
 sealed class NavigationItem(val title: String, val icon: ImageVector, val route: String) {
     object MatchList : NavigationItem("Matches", Icons.Filled.List, "matchList")
     object MatchDetail : NavigationItem("Match Details", Icons.Filled.Info, "matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}")
     object Settings : NavigationItem("Settings", Icons.Filled.Settings, "settings")
+    object Favorites : NavigationItem("Favorites", Icons.Filled.Favorite, "favorites") // Новый элемент
 }
 
 @Composable
@@ -28,8 +30,8 @@ fun BottomNavigationBar(navController: NavController) {
     BottomNavigation {
         val items = listOf(
             NavigationItem.MatchList,
-            NavigationItem.MatchDetail,
-            NavigationItem.Settings  // Add Settings to the navigation items
+            NavigationItem.Favorites, // Добавьте "Избранное" в список навигации
+            NavigationItem.Settings
         )
 
         items.forEach { item ->

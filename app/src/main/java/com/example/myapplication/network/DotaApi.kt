@@ -11,5 +11,5 @@ interface DotaApi {
     suspend fun getRecentMatches(@Path("playerId") playerId: Long): List<Match>
 
     @GET("matches")
-    suspend fun getMatchesByIds(@Query("match_id") matchIds: Set<String>): List<Match> // Example query
+    suspend fun getMatchesByIds(@Query("match_id") matchIds: List<Long>): List<Match> // Example query
 }

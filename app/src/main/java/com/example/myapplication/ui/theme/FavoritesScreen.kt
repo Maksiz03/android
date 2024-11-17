@@ -2,41 +2,40 @@ package com.example.myapplication.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.viewmodel.MatchViewModel
 import com.example.myapplication.datastore.FavoritesDataStore
 import com.example.myapplication.model.Match
+import com.example.myapplication.viewmodel.MatchViewModel
 import com.example.myapplication.viewmodel.UiState
-import kotlinx.coroutines.launch
 
 @Composable
 fun FavoritesScreen(
     navController: NavController,
-    viewModel: MatchViewModel,
+    viewModel: MatchViewModel = hiltViewModel(),
     favoritesDataStore: FavoritesDataStore
 ) {
-    // Collect the set of favorite match IDs from the data store
-    val favorites by favoritesDataStore.favoritesFlow.collectAsState(initial = emptySet())
-    // Collect the UI state from the ViewModel
-    val uiState by viewModel.uiState.collectAsState()
+    // Observe the flow of favorite IDs
+    val favoriteIds by favoritesDataStore.favoritesFlow.collectAsState(initial = emptySet())
 
-    // Coroutine scope for launching asynchronous operations
-
-    // Fetch favorite matches when the list of favorites changes
-    LaunchedEffect(favorites) {
-        if (favorites.isNotEmpty()) {
-            viewModel.getFavoriteMatches(favorites) // Ensure this method is implemented in your ViewModel
-        }
+    // Fetch favorite matches based on the observed IDs
+    LaunchedEffect(favoriteIds) {
+        viewModel.getFavoriteMatches(favoriteIds)
     }
 
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -51,15 +50,13 @@ fun FavoritesScreen(
                 if (matches.isEmpty()) {
                     Text(text = "No favorite matches found.")
                 } else {
-                    matches.forEach { match ->
-                        Text(
-                            text = "Match ID: ${match.match_id} | K: ${match.kills} D: ${match.deaths} A: ${match.assists}",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .clickable {
-                                    navController.navigate("matchDetail/${match.match_id}/${match.player_slot}/${match.kills}/${match.deaths}/${match.assists}")
-                                }
-                        )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(matches) { match ->
+                            MatchListItem(match, navController)
+                        }
                     }
                 }
             }
@@ -67,8 +64,22 @@ fun FavoritesScreen(
                 Text(text = "Error: ${(uiState as UiState.Error).message}")
             }
             else -> {
-                // Handle any other states if necessary
+                // Handle other possible states if needed
             }
         }
     }
+}
+
+
+@Composable
+fun MatchListItem(match: Match, navController: NavController) {
+    Text(
+        text = "Match ID: ${match.match_id} | K: ${match.kills} D: ${match.deaths} A: ${match.assists}",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                navController.navigate("matchDetail/${match.match_id}/${match.player_slot}/${match.kills}/${match.deaths}/${match.assists}")
+            }
+    )
 }

@@ -3,9 +3,9 @@ package com.example.myapplication.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +22,7 @@ fun Navigation(
     navController: NavHostController,
     viewModel: MatchViewModel,
     favoritesDataStore: FavoritesDataStore,
-    preferencesDataStore: PreferencesDataStore, // Ensure this is declared
+    preferencesDataStore: PreferencesDataStore,
     paddingValues: PaddingValues
 ) {
     Box(
@@ -35,8 +35,8 @@ fun Navigation(
                 MatchListScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    preferencesDataStore = preferencesDataStore, // Pass this parameter
-                    playerId = 301109979
+                    preferencesDataStore = preferencesDataStore,
+                    playerId = 301109979 // Example player ID
                 )
             }
             composable("matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}") { backStackEntry ->
@@ -52,20 +52,21 @@ fun Navigation(
                     kills = kills,
                     deaths = deaths,
                     assists = assists,
-                    navController = navController
+                    navController = navController,
+                    favoritesDataStore = favoritesDataStore // Pass favoritesDataStore if needed
                 )
             }
             composable("favorites") {
                 FavoritesScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    favoritesDataStore = favoritesDataStore
+                    favoritesDataStore = favoritesDataStore // Ensure this is accepted in FavoritesScreen
                 )
             }
             composable("settings") {
                 SettingsScreen(
                     navController = navController,
-                    preferencesDataStore = preferencesDataStore // Ensure this is used
+                    preferencesDataStore = preferencesDataStore
                 )
             }
         }
