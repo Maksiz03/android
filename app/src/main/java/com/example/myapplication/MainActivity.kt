@@ -16,46 +16,47 @@ import com.example.myapplication.viewmodel.MatchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.datastore.BadgeCache
+import com.example.myapplication.ui.theme.MyApplicationTheme // Assuming you have a theme set up
+import com.example.myapplication.viewmodel.ProfileViewModel
 
-// Аннотируем активность для использования Hilt
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppContent()
+            MyApplicationTheme {
+                AppContent()
+            }
         }
     }
 }
 
-// Функция для контента с Bottom Navigation и навигацией
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContent(
-    viewModel: MatchViewModel = hiltViewModel() // Use Hilt to provide ViewModel
+    matchViewModel: MatchViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel() // Inject ProfileViewModel
 ) {
     val navController = rememberNavController()
-
-    // Get the current context
     val context = LocalContext.current
 
     // Initialize DataStore objects with context
     val favoritesDataStore = FavoritesDataStore(context)
     val preferencesDataStore = PreferencesDataStore(context)
+    val badgeCache = BadgeCache()
 
-    // Scaffold for main UI with BottomBar
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         }
     ) { innerPadding ->
-        // Navigation with passing necessary data
         Navigation(
             navController = navController,
-            viewModel = viewModel,
+            viewModel  = matchViewModel,
+            profileViewModel = profileViewModel, // Pass ProfileViewModel here
             favoritesDataStore = favoritesDataStore,
             preferencesDataStore = preferencesDataStore,
-            badgeCache = BadgeCache(),
+            badgeCache = badgeCache,
             paddingValues = innerPadding
         )
     }

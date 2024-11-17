@@ -13,13 +13,14 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 
-// Define the navigation items including the new Favorites item
+// Define the navigation items
 sealed class NavigationItem(val title: String, val icon: ImageVector, val route: String) {
     object MatchList : NavigationItem("Matches", Icons.Filled.List, "matchList")
-    object MatchDetail : NavigationItem("Match Details", Icons.Filled.Info, "matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}")
+    object Favorites : NavigationItem("Favorites", Icons.Filled.Favorite, "favorites")
     object Settings : NavigationItem("Settings", Icons.Filled.Settings, "settings")
-    object Favorites : NavigationItem("Favorites", Icons.Filled.Favorite, "favorites") // Новый элемент
+    object Profile : NavigationItem("Profile", Icons.Filled.Person, "profile")
 }
 
 @Composable
@@ -30,18 +31,20 @@ fun BottomNavigationBar(navController: NavController) {
     BottomNavigation {
         val items = listOf(
             NavigationItem.MatchList,
-            NavigationItem.Favorites, // Добавьте "Избранное" в список навигации
-            NavigationItem.Settings
+            NavigationItem.Favorites,
+            NavigationItem.Settings,
+            NavigationItem.Profile
         )
 
         items.forEach { item ->
             BottomNavigationItem(
                 icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
-                selected = currentRoute?.startsWith(item.route.substringBefore("/{")) == true,
+                selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
+                            // Navigate to the destination, considering the navigation state
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }

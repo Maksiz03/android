@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.myapplication.datastore.BadgeCache
 import com.example.myapplication.ui.screens.MatchDetailScreen
 import com.example.myapplication.ui.screens.MatchListScreen
@@ -17,11 +19,15 @@ import com.example.myapplication.ui.SettingsScreen
 import com.example.myapplication.viewmodel.MatchViewModel
 import com.example.myapplication.datastore.FavoritesDataStore
 import com.example.myapplication.datastore.PreferencesDataStore
+import com.example.myapplication.ui.SettingsScreen
+import com.example.myapplication.ui.screens.ProfileScreen
+import com.example.myapplication.viewmodel.ProfileViewModel
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     viewModel: MatchViewModel,
+    profileViewModel: ProfileViewModel,
     favoritesDataStore: FavoritesDataStore,
     preferencesDataStore: PreferencesDataStore,
     paddingValues: PaddingValues,
@@ -38,16 +44,25 @@ fun Navigation(
                     navController = navController,
                     viewModel = viewModel,
                     preferencesDataStore = preferencesDataStore,
-                    badgeCache = BadgeCache(),
-                    playerId = 301109979 // Example player ID
+                    badgeCache = badgeCache, // Use existing badgeCache
+                    playerId = 301109979 // Example player ID, consider making this dynamic
                 )
             }
-            composable("matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}") { backStackEntry ->
-                val matchId = backStackEntry.arguments?.getString("matchId")?.toLong() ?: 0
-                val playerSlot = backStackEntry.arguments?.getString("playerSlot")?.toInt() ?: 0
-                val kills = backStackEntry.arguments?.getString("kills")?.toInt() ?: 0
-                val deaths = backStackEntry.arguments?.getString("deaths")?.toInt() ?: 0
-                val assists = backStackEntry.arguments?.getString("assists")?.toInt() ?: 0
+            composable(
+                route = "matchDetail/{matchId}/{playerSlot}/{kills}/{deaths}/{assists}",
+                arguments = listOf(
+                    navArgument("matchId") { type = NavType.LongType },
+                    navArgument("playerSlot") { type = NavType.IntType },
+                    navArgument("kills") { type = NavType.IntType },
+                    navArgument("deaths") { type = NavType.IntType },
+                    navArgument("assists") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                val matchId = backStackEntry.arguments?.getLong("matchId") ?: 0L
+                val playerSlot = backStackEntry.arguments?.getInt("playerSlot") ?: 0
+                val kills = backStackEntry.arguments?.getInt("kills") ?: 0
+                val deaths = backStackEntry.arguments?.getInt("deaths") ?: 0
+                val assists = backStackEntry.arguments?.getInt("assists") ?: 0
 
                 MatchDetailScreen(
                     matchId = matchId,
@@ -56,14 +71,14 @@ fun Navigation(
                     deaths = deaths,
                     assists = assists,
                     navController = navController,
-                    favoritesDataStore = favoritesDataStore // Pass favoritesDataStore if needed
+                    favoritesDataStore = favoritesDataStore
                 )
             }
             composable("favorites") {
                 FavoritesScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    favoritesDataStore = favoritesDataStore // Ensure this is accepted in FavoritesScreen
+                    favoritesDataStore = favoritesDataStore
                 )
             }
             composable("settings") {
@@ -71,6 +86,11 @@ fun Navigation(
                     navController = navController,
                     preferencesDataStore = preferencesDataStore
                 )
+            }
+            composable("profile") {  // Add the ProfileScreen route
+                ProfileScreen(
+                    viewModel = profileViewModel,
+                    )
             }
         }
     }
