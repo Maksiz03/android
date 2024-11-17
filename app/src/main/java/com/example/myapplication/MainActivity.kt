@@ -3,45 +3,60 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.datastore.FavoritesDataStore
+import com.example.myapplication.datastore.PreferencesDataStore
+import com.example.myapplication.navigation.BottomNavigationBar
+import com.example.myapplication.navigation.Navigation
+import com.example.myapplication.viewmodel.MatchViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.datastore.BadgeCache
 
+// Аннотируем активность для использования Hilt
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            AppContent()
         }
     }
 }
 
+// Функция для контента с Bottom Navigation и навигацией
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppContent(
+    viewModel: MatchViewModel = hiltViewModel() // Use Hilt to provide ViewModel
+) {
+    val navController = rememberNavController()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyApplicationTheme {
-        Greeting("Android")
+    // Get the current context
+    val context = LocalContext.current
+
+    // Initialize DataStore objects with context
+    val favoritesDataStore = FavoritesDataStore(context)
+    val preferencesDataStore = PreferencesDataStore(context)
+
+    // Scaffold for main UI with BottomBar
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { innerPadding ->
+        // Navigation with passing necessary data
+        Navigation(
+            navController = navController,
+            viewModel = viewModel,
+            favoritesDataStore = favoritesDataStore,
+            preferencesDataStore = preferencesDataStore,
+            badgeCache = BadgeCache(),
+            paddingValues = innerPadding
+        )
     }
 }
