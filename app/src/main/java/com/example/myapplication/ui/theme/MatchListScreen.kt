@@ -2,18 +2,19 @@ package com.example.myapplication.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplication.datastore.BadgeCache
 import com.example.myapplication.viewmodel.MatchViewModel
 import com.example.myapplication.datastore.PreferencesDataStore
 import com.example.myapplication.model.Match
 import com.example.myapplication.viewmodel.UiState
+
 import kotlinx.coroutines.launch
 
 @Composable
@@ -21,6 +22,7 @@ fun MatchListScreen(
     navController: NavController,
     viewModel: MatchViewModel,
     preferencesDataStore: PreferencesDataStore,
+    badgeCache: BadgeCache, // Inject BadgeCache
     playerId: Long,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -56,10 +58,17 @@ fun MatchListScreen(
             preferencesDataStore.saveMaxDeaths(maxDeaths)
             preferencesDataStore.saveMinAssists(minAssists)
         }
+        // Update badge state
+        badgeCache.updateBadgeState(isDefault = (minKills == 0 && maxDeaths == Int.MAX_VALUE && minAssists == 0))
         onDispose { }
     }
 
     Column {
+        // Display badge if filters are not default
+        if (badgeCache.shouldShowBadge) {
+            Text(text = "Filters are active", modifier = Modifier.padding(8.dp))
+        }
+
         // Add FilterControls to adjust filter values dynamically
         FilterControls(
             minKills = minKills,

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.myapplication.datastore.BadgeCache
 import com.example.myapplication.ui.screens.MatchDetailScreen
 import com.example.myapplication.ui.screens.MatchListScreen
 import com.example.myapplication.ui.screens.FavoritesScreen
@@ -23,7 +24,8 @@ fun Navigation(
     viewModel: MatchViewModel,
     favoritesDataStore: FavoritesDataStore,
     preferencesDataStore: PreferencesDataStore,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    badgeCache: BadgeCache
 ) {
     Box(
         modifier = Modifier
@@ -36,6 +38,7 @@ fun Navigation(
                     navController = navController,
                     viewModel = viewModel,
                     preferencesDataStore = preferencesDataStore,
+                    badgeCache = BadgeCache(),
                     playerId = 301109979 // Example player ID
                 )
             }

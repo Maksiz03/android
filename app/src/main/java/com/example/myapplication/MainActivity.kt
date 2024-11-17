@@ -15,6 +15,7 @@ import com.example.myapplication.navigation.Navigation
 import com.example.myapplication.viewmodel.MatchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.datastore.BadgeCache
 
 // Аннотируем активность для использования Hilt
 @AndroidEntryPoint
@@ -54,6 +55,7 @@ fun AppContent(
             viewModel = viewModel,
             favoritesDataStore = favoritesDataStore,
             preferencesDataStore = preferencesDataStore,
+            badgeCache = BadgeCache(),
             paddingValues = innerPadding
         )
     }

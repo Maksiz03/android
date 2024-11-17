@@ -2,6 +2,7 @@ package com.example.myapplication.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.myapplication.datastore.BadgeCache
 import com.example.myapplication.database.AppDatabase
 import com.example.myapplication.dao.FavoriteDao
 import com.example.myapplication.network.DotaApi
@@ -35,6 +36,14 @@ object AppModule {
     fun provideFavoriteDao(database: AppDatabase): FavoriteDao {
         return database.favoriteDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideBadgeCache(): BadgeCache {
+        return BadgeCache()
+    }
+
+
 
     @Provides
     @Singleton
