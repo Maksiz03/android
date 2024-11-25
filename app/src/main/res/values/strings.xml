@@ -3,5 +3,6 @@
     <string name="app_name">My Application</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="avatar_description">User Avatar</string>
+    <string name="open_resume">Open Resume</string>
     <!-- Add other string resources as needed -->
 </resources>

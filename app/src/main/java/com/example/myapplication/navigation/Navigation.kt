@@ -90,7 +90,7 @@ fun Navigation(
             composable("profile") {  // Add the ProfileScreen route
                 ProfileScreen(
                     viewModel = profileViewModel,
-                    )
+                )
             }
         }
     }
